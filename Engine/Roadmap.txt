@@ -1,0 +1,58 @@
+﻿======================================
+UPCOMING MILESTONES		   (unordered)
+======================================
+
+Database: only load data of nodes that are controlled by Control Server -- connected to node X, only customer Y and gateway Z can use that, so only load their data
+
+- CHECK MAXCALL
+>>> maxcall per Gateway? As it is the time waiting for the gateway to respond and this could vary per gateway
+- job collecting data about last 5 minutes every 30 seconds
+- maxcall refers to AVG and MAX and cannot be smaller then MIN
+
+
+
+- Alten VoIP_SamS Dienst migrieren
+-- Check limits and warn if reached
+-- Check yate availability and warn if offline unexpectedly
+
+
+----------------------------------------------------------
+Improvements later on
+
+
+- Caching of Task-Result for Customer Price Lookup (max dialcode length) -> controller_get_customer_cache
+
+RETURN QUERY SELECT id.identifier, id.customer_id, id.customer_ip_id, id.context_id, id.customer_limit, id.fake_ringing, id.host, id.prefix, id.qos_group_id, id.company_id, len.dialcode_max_length FROM
+				(
+					SELECT CONCAT(customer_ip.address, '#',COALESCE(customer.prefix, '')) AS identifier, customer.id AS customer_id, customer_ip.id AS customer_ip_id, customer.context_id,
+							controller_internal_limit_of_customer_reached(customer.id) AS customer_limit, customer.fake_ringing, host(customer_ip.address) AS host, customer_ip.address AS raddress, customer.prefix,
+							customer.qos_group_id, customer.company_id
+						FROM customer
+						INNER JOIN customer_ip ON customer_ip.customer_id = customer.id AND customer_ip.enabled = true AND customer_ip.deleted = false
+						WHERE customer.enabled = true AND customer.deleted = false			
+				) id,
+				(
+					SELECT customer.id AS customer_id, MAX(LENGTH(customer_price.number)) AS dialcode_max_length
+						FROM customer
+						LEFT JOIN customer_price ON customer_price.customer_id = customer.id AND NOW() BETWEEN customer_price.valid_from AND customer_price.valid_to
+						WHERE customer.enabled = true
+						GROUP BY customer.id
+				) len
+				WHERE id.customer_id = len.customer_id
+				ORDER BY id.raddress, id.prefix DESC NULLS LAST;
+
+
+
+
+
+- Caching of CL-Parameters in LiveCache
+
+- Evaluate: Caching of (database) tasks for few seconds
+
+- Set Handler Priority when installing handler to allow several Controller to work with same node (Fallback)
+
+- vars in routing as constants (?)
+
+- Manage IVR Numbers in Table with wildcard (aserisk: *)
+
+- history_* tables into own schema

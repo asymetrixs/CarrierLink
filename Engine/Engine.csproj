@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>CarrierLink.Controller.Engine</AssemblyName>
+    <RootNamespace>CarrierLink.Controller.Engine</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Changes\PGSQL_NewChanges.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Changes\PGSQL_NewChanges.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NLog" Version="4.5.11" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
+    <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Utilities\Utilities.csproj" />
+    <ProjectReference Include="..\Yate\Yate.csproj" />
+  </ItemGroup>
+
+</Project>
